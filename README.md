@@ -65,7 +65,7 @@ Demonstrar uma arquitetura **production-grade** de microserviços na AWS com:
 ```bash
 # Clone o repositório
 git clone https://github.com/jlui70/lab-istio-mesh-kiali-eks-terraform
-cd istio-eks-terraform-complete
+cd lab-istio-mesh-kiali-eks-terraform
 
 # Configure perfil AWS (IMPORTANTE!)
 export AWS_PROFILE=devopsproject  # Perfil que assume terraform-role
