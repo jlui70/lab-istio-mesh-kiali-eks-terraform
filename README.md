@@ -161,25 +161,40 @@ http://localhost:16686
 
 ---
 
-## 🎨 Demonstração: Canary Deployment 80/20
+## 🎨 Demonstrações Práticas
 
-### **Passo 1: Gerar tráfego**
+### **Demo 1: Circuit Breaker + Canary Deployment** ⭐ RECOMENDADO
+
+Demonstração visual completa de resiliência e canary deployment no Kiali.
 
 ```bash
-./test-canary-visual.sh
+./test-circuit-breaker-simple.sh
 ```
 
-### **Passo 2: Visualizar no Kiali**
+**O que você vai ver:**
 
+**FASE 1 - Canary Deployment (80/20):**
+- Tráfego distribuído: 80% v1 / 20% v2
+- Ambas versões saudáveis (verdes no Kiali)
+- Traffic Animation mostrando distribuição
+
+**FASE 2 - Circuit Breaker em Ação:**
+- v2 simula falha (crash)
+- Circuit Breaker detecta e ejeta v2
+- 100% do tráfego redirecionado para v1
+- Aplicação continua funcionando perfeitamente
+
+**Configuração no Kiali:**
 1. Abra **http://localhost:20001**
-2. Vá em **Graph**
-3. Selecione namespace **ecommerce**
-4. Em **Display**, marque **Traffic Distribution**
-5. Você verá:
-   - 80% do tráfego indo para `product-catalog-v1`
-   - 20% do tráfego indo para `product-catalog-v2`
+2. **Graph** → Namespace: **ecommerce**
+3. Display: **Traffic Distribution + Traffic Animation**
+4. Graph Type: **Versioned app graph**
 
-### **Passo 3: Validar Métricas no Prometheus**
+**Dica:** Execute `k9s -n ecommerce` em outro terminal para ver pods em tempo real.
+
+---
+
+### **Demo 2: Métricas e Queries no Prometheus**
 
 Abra **http://localhost:9090** e execute as queries:
 
