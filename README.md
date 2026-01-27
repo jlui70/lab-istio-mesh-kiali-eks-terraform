@@ -261,7 +261,7 @@ Contribuições são bem-vindas! Por favor:
 Este projeto foi inspirado e baseado no excelente trabalho de:
 
 ### **Rayan Slim**
-- 📹 **Canal YouTube:** [@RayanSlim087](https://www.youtube.com/@RayanSlim087)
+- 📹 **Canal YouTube:** [@RayanSlim087](https://www.youtube.com/@RayanLabs)
 - 🎓 Referência principal para arquitetura Istio Service Mesh
 - 🌟 Agradecimento especial pela didática e conteúdo de qualidade
 
