@@ -9,20 +9,88 @@
   <img src="https://img.shields.io/badge/Monitoring-Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white" />
 </p>
 
-> Deploy automatizado de **Cluster Amazon EKS** com **Istio Service Mesh**, **Observabilidade completa** (Prometheus, Grafana, Kiali, Jaeger) e demonstração de **Canary Deployment** (80/20 split) em uma aplicação E-commerce real.
+---
+
+## 📋 Sobre o Projeto
+
+Este projeto apresenta uma infraestrutura **production-grade** que demonstra a implementação completa de um Service Mesh na AWS, utilizando Terraform, Amazon EKS e Istio.
+
+A solução automatiza o provisionamento de uma arquitetura de microserviços com controle avançado de tráfego e observabilidade completa:
+
+🏗️ **Infraestrutura como Código (IaC)** provisiona toda a stack AWS (VPC, EKS, Node Groups) via Terraform  
+🕸️ **Istio Service Mesh** gerencia tráfego, segurança e observabilidade entre microserviços  
+🎯 **Canary Deployment** implementa estratégia de implantação gradual (80/20 split) em aplicação E-commerce real  
+📊 **Observabilidade Completa** integra Prometheus, Grafana, Kiali e Jaeger para monitoramento total  
+⚡ **Deploy Automatizado** permite provisionar toda a infraestrutura em ~35 minutos com 4 comandos  
+
+### 🔄 Fluxo de Deploy Validado
+
+**Provisionamento:** Terraform cria VPC multi-AZ, NAT Gateways e cluster EKS com 3 nós t3.medium  
+**Service Mesh:** Istio é instalado com control plane, ingress gateway (NLB) e sidecar injection automático  
+**Aplicação:** Deploy de microserviços E-commerce com Product Catalog em duas versões simultâneas  
+**Traffic Management:** VirtualService configura split 80/20 entre v1 e v2, permitindo canary deployment seguro  
+**Observabilidade:** Kiali visualiza topologia e distribuição de tráfego em tempo real, Jaeger rastreia transações distribuídas  
+
+✅ **Resultado:** O projeto comprova domínio em arquitetura cloud moderna, automação de infraestrutura e práticas avançadas de deployment em ambientes Kubernetes production-ready.
 
 ---
 
-## 🎯 Objetivo do Projeto
+## 🏗️ Arquitetura
 
-Demonstrar uma arquitetura **production-grade** de microserviços na AWS com:
-
-- ✅ **Infraestrutura como Código (IaC)** - Terraform para provisionar VPC, EKS, Nodes
-- ✅ **Service Mesh** - Istio para controle de tráfego, segurança e observabilidade
-- ✅ **Canary Deployment** - Deployment gradual com 80% v1 / 20% v2
-- ✅ **Observabilidade Total** - Prometheus, Grafana, Kiali (topologia), Jaeger (tracing)
-- ✅ **Circuit Breaker** - Resiliência contra falhas de microserviços
-- ✅ **Automação Completa** - 4 comandos para deploy total (~35 minutos)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      AWS CLOUD (us-east-1)                      │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  VPC (10.0.0.0/22)                                        │  │
+│  │                                                           │  │
+│  │  ┌──────────────┐        ┌──────────────┐                │  │
+│  │  │ Public 1a    │        │ Public 1b    │                │  │
+│  │  │ 10.0.0.0/26  │        │ 10.0.0.64/26 │                │  │
+│  │  │ NAT Gateway  │        │ NAT Gateway  │                │  │
+│  │  └──────┬───────┘        └───────┬──────┘                │  │
+│  │         │                        │                        │  │
+│  │  ┌──────┴────────────────────────┴──────┐                │  │
+│  │  │     Internet Gateway                 │                │  │
+│  │  └──────────────────────────────────────┘                │  │
+│  │         │                        │                        │  │
+│  │  ┌──────┴───────┐        ┌───────┴──────┐                │  │
+│  │  │ Private 1a   │        │ Private 1b   │                │  │
+│  │  │ 10.0.1.0/26  │        │ 10.0.1.64/26 │                │  │
+│  │  │              │        │              │                │  │
+│  │  │ ┌──────────────────────────────────┐ │                │  │
+│  │  │ │   EKS Cluster (v1.32)            │ │                │  │
+│  │  │ │                                  │ │                │  │
+│  │  │ │   ┌─────────────────────────┐   │ │                │  │
+│  │  │ │   │ Istio Control Plane     │   │ │                │  │
+│  │  │ │   │  - istiod               │   │ │                │  │
+│  │  │ │   │  - Ingress Gateway (NLB)│   │ │                │  │
+│  │  │ │   └─────────────────────────┘   │ │                │  │
+│  │  │ │                                  │ │                │  │
+│  │  │ │   ┌─────────────────────────┐   │ │                │  │
+│  │  │ │   │ Namespace: ecommerce    │   │ │                │  │
+│  │  │ │   │  + Frontend (React)     │   │ │                │  │
+│  │  │ │   │  + Product Catalog v1   │   │ │                │  │
+│  │  │ │   │  + Product Catalog v2   │   │ │                │  │
+│  │  │ │   │  + MongoDB              │   │ │                │  │
+│  │  │ │   │                         │   │ │                │  │
+│  │  │ │   │  Canary: 80% v1 / 20% v2│   │ │                │  │
+│  │  │ │   └─────────────────────────┘   │ │                │  │
+│  │  │ │                                  │ │                │  │
+│  │  │ │   ┌─────────────────────────┐   │ │                │  │
+│  │  │ │   │ Observability Stack     │   │ │                │  │
+│  │  │ │   │  - Prometheus           │   │ │                │  │
+│  │  │ │   │  - Grafana              │   │ │                │  │
+│  │  │ │   │  - Kiali                │   │ │                │  │
+│  │  │ │   │  - Jaeger               │   │ │                │  │
+│  │  │ │   └─────────────────────────┘   │ │                │  │
+│  │  │ │                                  │ │                │  │
+│  │  │ │   3x Nodes t3.medium             │ │                │  │
+│  │  │ └──────────────────────────────────┘ │                │  │
+│  │  └──────────────────────────────────────┘                │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -247,6 +315,17 @@ Para evitar custos AWS contínuos:
 
 ---
 
+## 📚 Documentação Adicional
+
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Soluções para 10 problemas comuns
+- **[QUICK-START.md](./QUICK-START.md)** - Referência rápida de comandos
+- **[DEMO-CANARY.md](./DEMO-CANARY.md)** - Guia completo de demonstração Canary
+- **[OBSERVABILITY.md](./OBSERVABILITY.md)** - Dashboards e métricas
+- **[PROJECT-STATUS.md](./PROJECT-STATUS.md)** - Histórico do projeto
+- **[PRE-COMMIT-CHECKLIST.md](./PRE-COMMIT-CHECKLIST.md)** - Checklist para contribuidores
+
+---
+
 ## 🔧 Troubleshooting
 
 ### **Erro: "Kubernetes cluster unreachable"**
@@ -259,6 +338,11 @@ export AWS_PROFILE=devopsproject  # Perfil que assume terraform-role
 aws eks update-kubeconfig --region us-east-1 --name eks-devopsproject-cluster
 kubectl get nodes
 ```
+
+Veja mais soluções em [TROUBLESHOOTING.md](./TROUBLESHOOTING.md).
+
+---
+
 ## 🤝 Contribuindo
 
 Contribuições são bem-vindas! Por favor:
